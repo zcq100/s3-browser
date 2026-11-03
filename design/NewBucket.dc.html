@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>新建存储桶</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#16181A;text-decoration:none}a:hover{color:#000}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F5F2; color: #16181A; font-family: 'Noto Sans SC', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 16px 12px 8px; display: flex; align-items: center; justify-content: space-between">
+    <a href="Main.dc.html" style="height: 44px; padding: 0 10px; display: flex; align-items: center; font-size: 15px; color: #3E4246">取消</a>
+    <h1 style="margin: 0; font-size: 17px; font-weight: 700">新建存储桶</h1>
+    <span style="width: 56px"></span>
+  </header>
+
+  <div style="flex: 1; padding: 8px 20px 0; display: flex; flex-direction: column; gap: 22px; overflow: hidden">
+
+    <label style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 13px; font-weight: 500; color: #3E4246">桶名称</span>
+      <span style="display: flex; align-items: center; height: 52px; padding: 0 14px; background: #FFFFFF; border: 2px solid {{accent}}; border-radius: 12px; box-sizing: border-box">
+        <input type="text" value="family-videos" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #16181A">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="名称可用"><path d="m5 12 5 5 9-10"></path></svg>
+      </span>
+      <span style="font-size: 12px; color: #5C6066; line-height: 1.5">3–63 位小写字母、数字、连字符；创建后不可修改</span>
+    </label>
+
+    <label style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 13px; font-weight: 500; color: #3E4246">区域</span>
+      <span style="display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 14px; background: #FFFFFF; border: 1px solid #D9DBD5; border-radius: 12px; box-sizing: border-box">
+        <select style="flex: 1; border: none; outline: none; background: transparent; font: inherit; font-size: 15px; color: #16181A; appearance: none">
+          <option>us-east-1（默认）</option>
+          <option>eu-central-1</option>
+          <option>ap-east-1</option>
+        </select>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C6066" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </span>
+    </label>
+
+    <fieldset style="margin: 0; padding: 0; border: none">
+      <legend style="padding: 0; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #3E4246">访问权限</legend>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #E6E8E3; border-radius: 12px">
+        <sc-for list="{{access}}" as="a" hint-placeholder-count="2">
+          <button type="button" onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="height: 44px; border: none; border-radius: 9px; background: {{a.bg}}; box-shadow: {{a.shadow}}; font: inherit; font-size: 14px; font-weight: {{a.weight}}; color: #16181A">{{a.label}}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{isPublic}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; background: #FDEBDD; color: #9A3412; font-size: 12px; line-height: 1.5">任何人都能通过 URL 读取桶内所有对象。只放可公开的静态资源。</p>
+      </sc-if>
+      <sc-if value="{{isPrivate}}" hint-placeholder-val="{{ true }}">
+        <p style="margin: 8px 0 0; font-size: 12px; color: #5C6066">只有持有密钥的账户能访问；对外可通过分享链接发放单个文件。</p>
+      </sc-if>
+    </fieldset>
+
+    <div style="background: #FFFFFF; border: 1px solid #E3E5DF; border-radius: 14px">
+      <button type="button" onClick="{{toggleVer}}" aria-pressed="{{verPressed}}" style="width: 100%; min-height: 64px; padding: 10px 14px; border: none; background: transparent; font: inherit; color: inherit; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left">
+        <span style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px">版本控制</span>
+          <span style="font-size: 12px; color: #5C6066">保留覆盖和删除前的旧版本</span>
+        </span>
+        <span style="width: 46px; height: 28px; flex: none; border-radius: 14px; background: {{verTrack}}; display: flex; align-items: center; padding: 3px; box-sizing: border-box; justify-content: {{verAlign}}"><span style="width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></span></span>
+      </button>
+      <div style="height: 1px; background: #E3E5DF; margin: 0 14px"></div>
+      <button type="button" onClick="{{toggleLock}}" aria-pressed="{{lockPressed}}" style="width: 100%; min-height: 64px; padding: 10px 14px; border: none; background: transparent; font: inherit; color: inherit; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left">
+        <span style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px">对象锁定</span>
+          <span style="font-size: 12px; color: #5C6066">防止对象被删除，需开启版本控制，创建后不可关闭</span>
+        </span>
+        <span style="width: 46px; height: 28px; flex: none; border-radius: 14px; background: {{lockTrack}}; display: flex; align-items: center; padding: 3px; box-sizing: border-box; justify-content: {{lockAlign}}"><span style="width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></span></span>
+      </button>
+    </div>
+  </div>
+
+  <div style="padding: 12px 20px 28px; border-top: 1px solid #E3E5DF">
+    <a href="Main.dc.html" style="height: 52px; border-radius: 14px; background: {{accent}}; color: #FFFFFF; font-size: 16px; font-weight: 500; display: flex; align-items: center; justify-content: center">创建存储桶</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#C2410C","options":["#C2410C","#1D4ED8","#0F766E","#16181A"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { pub: false, ver: true, lock: false };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#C2410C';
+    const s = this.state;
+    const sw = (b) => ({ track: b ? accent : '#B4B8B0', align: b ? 'flex-end' : 'flex-start', pressed: b ? 'true' : 'false' });
+    const v = sw(s.ver), l = sw(s.lock);
+    const access = [{ label: '私有', pub: false }, { label: '公开读', pub: true }].map((a) => {
+      const sel = s.pub === a.pub;
+      return { ...a, pressed: sel ? 'true' : 'false', bg: sel ? '#FFFFFF' : 'transparent', weight: sel ? 500 : 400, shadow: sel ? '0 1px 3px rgba(22,24,26,0.15)' : 'none', pick: () => this.setState({ pub: a.pub }) };
+    });
+    return {
+      accent,
+      access,
+      isPublic: s.pub,
+      isPrivate: !s.pub,
+      verTrack: v.track, verAlign: v.align, verPressed: v.pressed,
+      lockTrack: l.track, lockAlign: l.align, lockPressed: l.pressed,
+      toggleVer: () => this.setState({ ver: !s.ver, lock: s.ver ? false : s.lock }),
+      toggleLock: () => this.setState({ lock: !s.lock, ver: !s.lock ? true : s.ver })
+    };
+  }
+}
+</script>
+</body>
+</html>

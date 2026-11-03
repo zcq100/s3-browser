@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>存储桶列表</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#16181A;text-decoration:none}a:hover{color:#000}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F5F2; color: #16181A; font-family: 'Noto Sans SC', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 20px 20px 12px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <button type="button" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px 0 10px; border: 1px solid #D9DBD5; border-radius: 22px; background: #FFFFFF; font: inherit; font-size: 14px; color: #16181A">
+        <span style="width: 24px; height: 24px; border-radius: 12px; background: #16181A; color: #FFFFFF; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">M</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px">minio.home:9000</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      </button>
+      <button type="button" aria-label="搜索" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: #16181A; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      </button>
+    </div>
+    <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px">存储桶</h1>
+  </header>
+
+  <div style="padding: 4px 20px 12px; display: flex; align-items: center; justify-content: space-between">
+    <span style="font-size: 13px; color: #5C6066">5 个存储桶 · 按名称</span>
+    <a href="NewBucket.dc.html" style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 18px; background: {{accent}}; color: #FFFFFF; font-size: 14px; font-weight: 500">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      新建桶
+    </a>
+  </div>
+
+  <ul style="list-style: none; margin: 0; padding: 0 20px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; overflow: hidden">
+    <sc-for list="{{buckets}}" as="b" hint-placeholder-count="5">
+      <li>
+        <a href="Files.dc.html" style="display: flex; align-items: center; gap: 14px; min-height: 72px; padding: 12px 14px; background: #FFFFFF; border: 1px solid #E3E5DF; border-radius: 14px; box-sizing: border-box">
+          <span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: #ECEEE9; color: #16181A; display: flex; align-items: center; justify-content: center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"></ellipse><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"></path><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"></path></svg>
+          </span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+            <span style="display: flex; align-items: center; gap: 8px">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{b.name}}</span>
+              <sc-if value="{{b.public}}" hint-placeholder-val="{{ false }}">
+                <span style="flex: none; font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #FDEBDD; color: #9A3412">公开读</span>
+              </sc-if>
+            </span>
+            <span style="font-size: 12px; color: #5C6066">{{b.meta}}</span>
+          </span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A8E93" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+        </a>
+      </li>
+    </sc-for>
+  </ul>
+
+  <nav aria-label="主导航" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 6px 8px 22px; background: #FFFFFF; border-top: 1px solid #E3E5DF">
+    <a href="Main.dc.html" aria-current="page" style="height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; color: {{accent}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"></ellipse><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"></path></svg>存储桶</a>
+    <a href="Shares.dc.html" style="height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: #5C6066">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>分享记录</a>
+    <a href="#" style="height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: #5C6066">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v14M3 14l4 4 4-4"></path><path d="M17 20V6M13 10l4-4 4 4"></path></svg>传输</a>
+    <a href="#" style="height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; color: #5C6066">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>设置</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#C2410C","options":["#C2410C","#1D4ED8","#0F766E","#16181A"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#C2410C';
+    return {
+      accent,
+      buckets: [
+        { name: 'backups', meta: 'eu-central-1 · 创建于 2024-03-18', public: false },
+        { name: 'logs-archive', meta: 'ap-east-1 · 创建于 2025-07-02', public: false },
+        { name: 'photos-2026', meta: 'us-east-1 · 创建于 2026-01-04', public: false },
+        { name: 'shared-docs', meta: 'us-east-1 · 创建于 2025-11-20', public: false },
+        { name: 'site-static', meta: 'us-east-1 · 创建于 2024-09-09', public: true }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

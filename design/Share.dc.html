@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>创建分享链接</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#16181A;text-decoration:none}a:hover{color:#000}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F4F5F2; color: #16181A; font-family: 'Noto Sans SC', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 16px 12px 8px; display: flex; align-items: center; gap: 4px">
+    <a href="FileActions.dc.html" aria-label="返回" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 22px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-size: 18px; font-weight: 700">创建分享链接</h1>
+  </header>
+
+  <div style="flex: 1; overflow: hidden; padding: 4px 20px 0; display: flex; flex-direction: column; gap: 22px">
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #FFFFFF; border: 1px solid #E3E5DF; border-radius: 14px">
+      <span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: #FDEBDD; color: #9A3412; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500; display: flex; align-items: center; justify-content: center">JPG</span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px">IMG_0412.jpg</span>
+        <span style="font-size: 12px; color: #5C6066">photos-2026 / trips / kyoto · 4.2 MB</span>
+      </span>
+    </div>
+
+    <fieldset style="margin: 0; padding: 0; border: none">
+      <legend style="padding: 0; margin-bottom: 10px; font-size: 13px; font-weight: 500; color: #3E4246">有效期</legend>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #E6E8E3; border-radius: 12px">
+        <sc-for list="{{expiries}}" as="e" hint-placeholder-count="4">
+          <button type="button" onClick="{{e.pick}}" aria-pressed="{{e.pressed}}" style="height: 40px; border: none; border-radius: 9px; background: {{e.bg}}; font: inherit; font-size: 14px; font-weight: {{e.weight}}; color: #16181A; box-shadow: {{e.shadow}}">{{e.label}}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{isCustom}}" hint-placeholder-val="{{ false }}">
+        <label style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 14px; background: #FFFFFF; border: 1px solid #D9DBD5; border-radius: 12px">
+          <span style="font-size: 14px; color: #3E4246">失效时间</span>
+          <input type="datetime-local" value="2026-11-06T18:00" style="border: none; outline: none; background: transparent; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #16181A">
+        </label>
+      </sc-if>
+      <p style="margin: 8px 0 0; font-size: 12px; color: #5C6066">将于 {{expiresAt}} 失效 · 最长 7 天</p>
+    </fieldset>
+
+    <div style="background: #FFFFFF; border: 1px solid #E3E5DF; border-radius: 14px">
+      <button type="button" onClick="{{toggleAttach}}" aria-pressed="{{attachPressed}}" style="width: 100%; min-height: 64px; padding: 10px 14px; border: none; background: transparent; font: inherit; color: inherit; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left">
+        <span style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px">打开即下载</span>
+          <span style="font-size: 12px; color: #5C6066">不在浏览器里预览，直接保存为原文件名</span>
+        </span>
+        <span style="width: 46px; height: 28px; flex: none; border-radius: 14px; background: {{attachTrack}}; display: flex; align-items: center; padding: 3px; box-sizing: border-box; justify-content: {{attachAlign}}"><span style="width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></span></span>
+      </button>
+      <div style="height: 1px; background: #E3E5DF; margin: 0 14px"></div>
+      <div style="min-height: 56px; padding: 10px 14px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+        <span style="font-size: 15px">签名密钥</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #3E4246">AKIA····7Q2F</span>
+      </div>
+    </div>
+
+    <div style="padding: 12px 14px; background: #ECEEE9; border-radius: 12px; display: flex; gap: 10px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3E4246" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+      <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #3E4246">拿到链接的人都能下载。链接发出后不能撤销，也看不到访问次数；要提前作废，只能删除或移动这个文件，或者停用签名密钥。</p>
+    </div>
+  </div>
+
+  <div style="padding: 12px 20px 28px; background: #F4F5F2; border-top: 1px solid #E3E5DF">
+    <a href="ShareDone.dc.html" style="height: 52px; border-radius: 14px; background: {{accent}}; color: #FFFFFF; font-size: 16px; font-weight: 500; display: flex; align-items: center; justify-content: center">生成链接</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#C2410C","options":["#C2410C","#1D4ED8","#0F766E","#16181A"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { expiry: 2, attach: false };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#C2410C';
+    const s = this.state;
+    const expDefs = [
+      { label: '1 小时', at: '今天 10:14' },
+      { label: '1 天', at: '明天 09:14' },
+      { label: '7 天', at: '11月11日 09:14' },
+      { label: '自定义', at: '11月6日 18:00' }
+    ];
+    return {
+      accent,
+      expiries: expDefs.map((e, i) => {
+        const sel = s.expiry === i;
+        return { ...e, pressed: sel ? 'true' : 'false', bg: sel ? '#FFFFFF' : 'transparent', weight: sel ? 500 : 400, shadow: sel ? '0 1px 3px rgba(22,24,26,0.15)' : 'none', pick: () => this.setState({ expiry: i }) };
+      }),
+      isCustom: s.expiry === 3,
+      expiresAt: expDefs[s.expiry].at,
+      attachTrack: s.attach ? accent : '#B4B8B0',
+      attachAlign: s.attach ? 'flex-end' : 'flex-start',
+      attachPressed: s.attach ? 'true' : 'false',
+      toggleAttach: () => this.setState({ attach: !s.attach })
+    };
+  }
+}
+</script>
+</body>
+</html>
