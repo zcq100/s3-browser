@@ -1,5 +1,8 @@
 package com.zcq100.s3browser.ui.files
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,6 +66,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.zcq100.s3browser.s3.ObjectEntry
 import com.zcq100.s3browser.ui.common.BackButton
 import com.zcq100.s3browser.ui.common.FileBadge
@@ -83,6 +87,23 @@ fun FilesScreen(bucket: String, onBack: () -> Unit, onShare: (bucket: String, ke
 
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { vm.upload(it) }
 
+    // Android 9 及以下写公共「下载」目录需要存储权限；10 起不需要。
+    var pendingDownload by remember { mutableStateOf<List<ObjectEntry>?>(null) }
+    val storagePermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        pendingDownload?.let { if (granted) vm.download(it) else context.toast("没有存储权限，无法保存到下载目录") }
+        pendingDownload = null
+    }
+    val download: (List<ObjectEntry>) -> Unit = { entries ->
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingDownload = entries
+            storagePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            vm.download(entries)
+        }
+    }
+
     LaunchedEffect(vm.message) {
         vm.message?.let { context.toast(it); vm.message = null }
     }
@@ -97,6 +118,7 @@ fun FilesScreen(bucket: String, onBack: () -> Unit, onShare: (bucket: String, ke
             if (vm.selecting) {
                 SelectionBar(
                     vm,
+                    onDownload = { download(vm.selected.values.toList()); vm.exitSelect() },
                     onShare = { vm.selected.values.singleOrNull()?.let { onShare(bucket, it.key) } },
                     onDelete = { confirmDelete = vm.selected.keys.toList() },
                 )
@@ -136,7 +158,7 @@ fun FilesScreen(bucket: String, onBack: () -> Unit, onShare: (bucket: String, ke
             detail = vm.detail,
             onDismiss = vm::hideDetail,
             onShare = { vm.hideDetail(); onShare(bucket, entry.key) },
-            onDownload = { vm.download(listOf(entry)) },
+            onDownload = { download(listOf(entry)) },
             onRename = { renaming = entry },
             onDelete = { confirmDelete = listOf(entry.key) },
         )
@@ -328,13 +350,13 @@ private fun EntryRow(e: ObjectEntry, selecting: Boolean, checked: Boolean, onCli
 }
 
 @Composable
-private fun SelectionBar(vm: FilesViewModel, onShare: () -> Unit, onDelete: () -> Unit) {
+private fun SelectionBar(vm: FilesViewModel, onDownload: () -> Unit, onShare: () -> Unit, onDelete: () -> Unit) {
     val count = vm.selected.size
     val total = vm.selected.values.sumOf { it.size }
     Column(Modifier.fillMaxWidth().background(Palette.Ink).navigationBarsPadding().padding(horizontal = 12.dp, vertical = 10.dp)) {
         Text("已选 $count 项 · ${formatSize(total)}", Modifier.padding(horizontal = 8.dp), color = Color(0xFFC9CCC4), fontSize = 13.sp)
         Row(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            BarAction(Icons.Outlined.Download, "下载", count > 0, Color.White) { vm.download(vm.selected.values.toList()); vm.exitSelect() }
+            BarAction(Icons.Outlined.Download, "下载", count > 0, Color.White, onDownload)
             BarAction(Icons.Outlined.Link, "分享", count == 1, Color.White, onShare)
             BarAction(Icons.Outlined.Delete, "删除", count > 0, Palette.DangerSoft, onDelete)
         }
