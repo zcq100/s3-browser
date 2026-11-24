@@ -40,6 +40,9 @@ interface ObjectStore : Closeable {
     suspend fun isPublicRead(bucket: String): Boolean
     suspend fun list(bucket: String, prefix: String, continuationToken: String?): ListPage
     suspend fun head(bucket: String, key: String): ObjectDetail
+
+    /** 读取对象的开头，最多 [maxBytes] 字节；用于文本/图片预览，不必整份下载。 */
+    suspend fun read(bucket: String, key: String, maxBytes: Long): ByteArray
     suspend fun put(bucket: String, key: String, length: Long, contentType: String?, open: () -> InputStream)
     suspend fun createFolder(bucket: String, prefix: String)
     suspend fun delete(bucket: String, keys: List<String>)

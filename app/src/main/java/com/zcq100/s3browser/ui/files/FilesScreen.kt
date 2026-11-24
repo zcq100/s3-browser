@@ -74,11 +74,17 @@ import com.zcq100.s3browser.ui.common.appViewModel
 import com.zcq100.s3browser.ui.common.formatSize
 import com.zcq100.s3browser.ui.common.formatTime
 import com.zcq100.s3browser.ui.common.toast
+import com.zcq100.s3browser.ui.preview.PreviewKind
 import com.zcq100.s3browser.ui.theme.Mono
 import com.zcq100.s3browser.ui.theme.Palette
 
 @Composable
-fun FilesScreen(bucket: String, onBack: () -> Unit, onShare: (bucket: String, key: String) -> Unit) {
+fun FilesScreen(
+    bucket: String,
+    onBack: () -> Unit,
+    onPreview: (bucket: String, key: String) -> Unit,
+    onShare: (bucket: String, key: String) -> Unit,
+) {
     val vm = appViewModel { FilesViewModel(it, bucket) }
     val context = LocalContext.current
     var newFolder by remember { mutableStateOf(false) }
@@ -101,6 +107,16 @@ fun FilesScreen(bucket: String, onBack: () -> Unit, onShare: (bucket: String, ke
             storagePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
             vm.download(entries)
+        }
+    }
+
+    val preview: (ObjectEntry) -> Unit = { entry ->
+        PreviewKind.of(entry.name)?.let { kind ->
+            vm.hideDetail()
+            when (kind) {
+                PreviewKind.TEXT, PreviewKind.IMAGE -> onPreview(bucket, entry.key)
+                PreviewKind.MEDIA -> vm.openExternally(entry)
+            }
         }
     }
 
@@ -157,6 +173,7 @@ fun FilesScreen(bucket: String, onBack: () -> Unit, onShare: (bucket: String, ke
             entry = entry,
             detail = vm.detail,
             onDismiss = vm::hideDetail,
+            onPreview = { preview(entry) },
             onShare = { vm.hideDetail(); onShare(bucket, entry.key) },
             onDownload = { download(listOf(entry)) },
             onRename = { renaming = entry },

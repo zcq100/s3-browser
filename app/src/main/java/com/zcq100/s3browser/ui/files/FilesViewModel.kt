@@ -1,6 +1,8 @@
 package com.zcq100.s3browser.ui.files
 
 import android.app.DownloadManager
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.util.Log
 import android.net.Uri
 import android.os.Environment
@@ -16,6 +18,7 @@ import com.zcq100.s3browser.s3.ObjectDetail
 import com.zcq100.s3browser.s3.ObjectEntry
 import com.zcq100.s3browser.s3.ObjectStore
 import com.zcq100.s3browser.s3.toUserMessage
+import com.zcq100.s3browser.ui.preview.mediaMimeType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -223,6 +226,27 @@ class FilesViewModel(private val app: AppContainer, val bucket: String) : ViewMo
                     )
                 }
             }.onSuccess { message = "已开始下载，保存在 下载/S3" }.onFailure { message = it.toUserMessage() }
+        }
+    }
+
+    /**
+     * 视频/音频不做内置播放器：签一个预签名链接，交给系统里已装的播放器或浏览器。
+     * 播放器会自己发起 Range 请求，链接有效期取签名上限，避免长视频播到一半失效。
+     */
+    fun openExternally(entry: ObjectEntry) {
+        viewModelScope.launch {
+            busy = "准备打开…"
+            runCatching {
+                val url = store().presignGet(bucket, entry.key, ObjectStore.MAX_PRESIGN_TTL, attachment = false)
+                val intent = Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(Uri.parse(url), mediaMimeType(entry.name))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .putExtra(Intent.EXTRA_TITLE, entry.name)
+                app.context.startActivity(Intent.createChooser(intent, "打开 ${entry.name}").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }.onFailure {
+                message = if (it is ActivityNotFoundException) "没有能打开这种文件的应用" else it.toUserMessage()
+            }
+            busy = null
         }
     }
 }

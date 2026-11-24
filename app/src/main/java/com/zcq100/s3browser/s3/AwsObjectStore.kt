@@ -21,6 +21,7 @@ import aws.sdk.kotlin.services.s3.putObject
 import aws.smithy.kotlin.runtime.client.config.RequestHttpChecksumConfig
 import aws.smithy.kotlin.runtime.client.config.ResponseHttpChecksumConfig
 import aws.smithy.kotlin.runtime.content.ByteStream
+import aws.smithy.kotlin.runtime.content.toByteArray
 import aws.smithy.kotlin.runtime.io.SdkSource
 import aws.smithy.kotlin.runtime.io.source
 import aws.smithy.kotlin.runtime.net.url.Url
@@ -90,6 +91,17 @@ class AwsObjectStore(private val conn: Connection) : ObjectStore {
             lastModified = r.lastModified?.toEpochMillis(),
             storageClass = r.storageClass?.value ?: "STANDARD",
         )
+    }
+
+    override suspend fun read(bucket: String, key: String, maxBytes: Long): ByteArray {
+        if (maxBytes <= 0) return ByteArray(0)
+        val request = GetObjectRequest {
+            this.bucket = bucket
+            this.key = key
+            range = "bytes=0-${maxBytes - 1}"
+        }
+        // getObject 是流式接口，响应体只在 block 里可读。
+        return client.getObject(request) { response -> response.body?.toByteArray() ?: ByteArray(0) }
     }
 
     /**

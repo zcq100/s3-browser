@@ -16,6 +16,7 @@ import com.zcq100.s3browser.ui.buckets.NewBucketScreen
 import com.zcq100.s3browser.ui.common.Tab
 import com.zcq100.s3browser.ui.connection.ConnectionEditScreen
 import com.zcq100.s3browser.ui.files.FilesScreen
+import com.zcq100.s3browser.ui.preview.PreviewScreen
 import com.zcq100.s3browser.ui.share.ShareScreen
 import com.zcq100.s3browser.ui.share.SharesScreen
 import com.zcq100.s3browser.ui.theme.S3BrowserTheme
@@ -36,10 +37,12 @@ private object Routes {
     const val NEW_BUCKET = "bucket/new"
     const val CONNECTION = "connection?id={id}"
     const val FILES = "files/{bucket}"
+    const val PREVIEW = "preview/{bucket}?key={key}"
     const val SHARE = "share/{bucket}?key={key}"
 
     fun connection(id: String?) = if (id == null) "connection" else "connection?id=${Uri.encode(id)}"
     fun files(bucket: String) = "files/${Uri.encode(bucket)}"
+    fun preview(bucket: String, key: String) = "preview/${Uri.encode(bucket)}?key=${Uri.encode(key)}"
     fun share(bucket: String, key: String) = "share/${Uri.encode(bucket)}?key=${Uri.encode(key)}"
 }
 
@@ -80,7 +83,21 @@ private fun AppNav() {
             FilesScreen(
                 bucket = entry.arguments!!.getString("bucket")!!,
                 onBack = { nav.popBackStack() },
+                onPreview = { b, k -> nav.navigate(Routes.preview(b, k)) },
                 onShare = { b, k -> nav.navigate(Routes.share(b, k)) },
+            )
+        }
+        composable(
+            Routes.PREVIEW,
+            arguments = listOf(
+                navArgument("bucket") { type = NavType.StringType },
+                navArgument("key") { type = NavType.StringType },
+            ),
+        ) { entry ->
+            PreviewScreen(
+                bucket = entry.arguments!!.getString("bucket")!!,
+                key = entry.arguments!!.getString("key")!!,
+                onBack = { nav.popBackStack() },
             )
         }
         composable(

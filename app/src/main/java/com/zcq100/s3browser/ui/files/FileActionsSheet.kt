@@ -16,9 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Photo
+import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -38,9 +41,11 @@ import com.zcq100.s3browser.s3.ObjectDetail
 import com.zcq100.s3browser.s3.ObjectEntry
 import com.zcq100.s3browser.ui.common.FileBadge
 import com.zcq100.s3browser.ui.common.PrimaryButton
+import com.zcq100.s3browser.ui.common.SecondaryButton
 import com.zcq100.s3browser.ui.common.copyText
 import com.zcq100.s3browser.ui.common.formatSize
 import com.zcq100.s3browser.ui.common.formatTime
+import com.zcq100.s3browser.ui.preview.PreviewKind
 import com.zcq100.s3browser.ui.theme.Mono
 import com.zcq100.s3browser.ui.theme.Palette
 
@@ -51,6 +56,7 @@ fun FileActionsSheet(
     entry: ObjectEntry,
     detail: ObjectDetail?,
     onDismiss: () -> Unit,
+    onPreview: () -> Unit,
     onShare: () -> Unit,
     onDownload: () -> Unit,
     onRename: () -> Unit,
@@ -88,6 +94,19 @@ fun FileActionsSheet(
                 InfoRow("路径", path)
                 InfoRow("ETag", detail?.eTag ?: "…")
                 InfoRow("存储类型", detail?.storageClass ?: "…", mono = false)
+            }
+
+            PreviewKind.of(entry.name)?.let { kind ->
+                SecondaryButton(
+                    text = kind.label,
+                    onClick = onPreview,
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = when (kind) {
+                        PreviewKind.TEXT -> Icons.Outlined.Description
+                        PreviewKind.IMAGE -> Icons.Outlined.Photo
+                        PreviewKind.MEDIA -> Icons.Outlined.PlayCircle
+                    },
+                )
             }
 
             PrimaryButton("创建分享链接", onShare, icon = Icons.Outlined.Link)
