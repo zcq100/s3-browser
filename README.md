@@ -6,6 +6,16 @@
 
 支持 AWS S3、MinIO、阿里云 OSS、腾讯云 COS、华为云 OBS、七牛 Kodo、Cloudflare R2 及其他 S3 兼容服务。
 
+## 截图
+
+| 存储桶 | 浏览文件 | 文件操作 |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/01-buckets.png" width="240" alt="存储桶列表"> | <img src="docs/screenshots/02-files.png" width="240" alt="浏览文件"> | <img src="docs/screenshots/03-file-actions.png" width="240" alt="文件操作"> |
+| **创建分享链接** | **链接已生成** | **本机分享记录** |
+| <img src="docs/screenshots/04-share-form.png" width="240" alt="创建分享链接"> | <img src="docs/screenshots/05-share-link.png" width="240" alt="链接已生成"> | <img src="docs/screenshots/06-shares.png" width="240" alt="本机分享记录"> |
+
+> 截图中的预签名链接与二维码已打码。
+
 ## 构建
 
 需要 JDK 17+（带 `javac`）和 Android SDK（compileSdk 37）。系统只有 JRE 时可用 Android Studio 自带的 JBR：
