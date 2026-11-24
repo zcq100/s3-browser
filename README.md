@@ -1,5 +1,7 @@
 <h1 align="center">S3 浏览器</h1>
 
+<p align="center"><a href="README.en.md">English</a> | 简体中文</p>
+
 <p align="center">
   Android 上的 S3 兼容对象存储客户端<br>
   浏览、预览、上传下载，用预签名链接分享文件。
@@ -11,6 +13,7 @@
   <img alt="Kotlin 2.4" src="https://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoColor=white">
   <img alt="Jetpack Compose" src="https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white">
   <img alt="S3 compatible" src="https://img.shields.io/badge/API-S3%20compatible-569A31">
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
 </p>
 
 S3 浏览器是一个原生 Android 应用，用来管理 S3 兼容对象存储：浏览存储桶和文件、查看文本/图片、内置播放视频、上传下载，以及用 SigV4 预签名链接分享单个文件。
@@ -181,7 +184,7 @@ docs/screenshots/  README 截图
 
 ## 许可证
 
-仓库目前没有 `LICENSE` 文件；在补充许可证之前，代码保留所有权利。
+Copyright 2026 zcq100。本项目以 [Apache License 2.0](LICENSE) 发布。
 
 ## 致谢
 
