@@ -1,6 +1,6 @@
 # S3 浏览器（Android）
 
-手机上管理 S3 兼容对象存储：浏览存储桶和文件、查看文本和图片、上传下载、创建预签名分享链接、新建存储桶。视频、音频用预签名链接交给系统里已安装的其他应用打开。
+手机上管理 S3 兼容对象存储：浏览存储桶和文件、查看文本和图片、播放视频、上传下载、创建预签名分享链接、新建存储桶。音频、SVG 用预签名链接交给系统里已安装的其他应用打开。
 
 除了对象存储本身没有任何后端；对象存储 API 不支持的功能不做。分享就是 SigV4 预签名链接（最长 7 天、不能撤销、没有访问统计），分享记录只存在本机。
 
@@ -30,7 +30,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 - `app/src/main/java/com/zcq100/s3browser/s3/` — `ObjectStore` 接口及基于 AWS SDK for Kotlin 的实现
 - `.../data/` — 连接配置（Secret Key 经 Android Keystore 加密）、服务商预设、本机分享记录
 - `.../ui/` — Jetpack Compose 界面
-- `.../ui/preview/` — 文本、图片的内置查看；视频和音频签临时链接交给外部应用
+- `.../ui/preview/` — 文本、图片、视频的内置查看；音频和 SVG 签临时链接交给外部应用
 - `design/` — 设计稿源文件
 
 ## 兼容性配置

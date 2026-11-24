@@ -23,9 +23,16 @@ class PreviewKindTest {
     }
 
     @Test
-    fun `视频和音频交给其他应用`() {
-        assertEquals(PreviewKind.MEDIA, PreviewKind.of("clip.mp4"))
+    fun `视频在应用内播放`() {
+        assertEquals(PreviewKind.VIDEO, PreviewKind.of("clip.mp4"))
+        assertEquals(PreviewKind.VIDEO, PreviewKind.of("movie.MKV"))
+        assertEquals(PreviewKind.VIDEO, PreviewKind.of("a.webm"))
+    }
+
+    @Test
+    fun `音频和 SVG 交给其他应用`() {
         assertEquals(PreviewKind.MEDIA, PreviewKind.of("song.flac"))
+        assertEquals(PreviewKind.MEDIA, PreviewKind.of("voice.mp3"))
         assertEquals(PreviewKind.MEDIA, PreviewKind.of("drawing.svg"))
     }
 

@@ -2,6 +2,10 @@ package com.zcq100.s3browser.ui.preview
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Log
+import android.widget.MediaController
+import android.widget.VideoView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -22,6 +26,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,14 +41,19 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zcq100.s3browser.AppContainer
 import com.zcq100.s3browser.s3.ObjectDetail
+import com.zcq100.s3browser.s3.ObjectStore
 import com.zcq100.s3browser.s3.toUserMessage
 import com.zcq100.s3browser.ui.common.BackButton
 import com.zcq100.s3browser.ui.common.Notice
@@ -76,6 +86,8 @@ class PreviewViewModel(private val app: AppContainer, val bucket: String, val ke
     var lines by mutableStateOf<List<String>>(emptyList())
         private set
     var image by mutableStateOf<Bitmap?>(null)
+        private set
+    var videoUrl by mutableStateOf<String?>(null)
         private set
     var truncated by mutableStateOf(false)
         private set
@@ -118,6 +130,10 @@ class PreviewViewModel(private val app: AppContainer, val bucket: String, val ke
                                 ?: run { error = "无法解析这张图片"; null }
                         }
                     }
+                    PreviewKind.VIDEO -> {
+                        // 播放器直接按 Range 拉流，链接有效期取签名上限，长视频不会播到一半失效。
+                        videoUrl = store.presignGet(bucket, key, ObjectStore.MAX_PRESIGN_TTL, attachment = false)
+                    }
                     PreviewKind.MEDIA -> error = "这种文件需要用其他应用打开"
                 }
             }.onFailure { error = it.toUserMessage() }
@@ -138,6 +154,7 @@ fun PreviewScreen(bucket: String, key: String, onBack: () -> Unit) {
                 vm.loading -> CircularProgressIndicator(Modifier.align(Alignment.Center), color = Palette.Accent)
                 problem != null -> ErrorBox(problem, vm::load)
                 vm.kind == PreviewKind.TEXT -> TextBody(vm.lines)
+                vm.kind == PreviewKind.VIDEO -> vm.videoUrl?.let { VideoBody(it) }
                 bitmap != null -> ImageBody(bitmap, vm.name)
             }
         }
@@ -226,6 +243,60 @@ private fun ImageBody(bitmap: Bitmap, name: String) {
             contentScale = ContentScale.Fit,
             filterQuality = FilterQuality.High,
         )
+    }
+}
+
+/**
+ * 视频直接用预签名链接流式播放，不走外部应用：
+ * 相册类应用通常只接受 content:// URI，拿到 https 链接会立刻退出。
+ */
+@Composable
+private fun VideoBody(url: String) {
+    val context = LocalContext.current
+    val host = LocalView.current
+    val video = remember { VideoView(context) }
+    var ready by remember { mutableStateOf(false) }
+    var playbackError by remember { mutableStateOf<String?>(null) }
+
+    DisposableEffect(url) {
+        host.keepScreenOn = true
+        val controller = MediaController(context)
+        controller.setAnchorView(video)
+        video.setMediaController(controller)
+        video.setOnPreparedListener { mp ->
+            ready = true
+            mp.isLooping = false
+            video.start()
+        }
+        video.setOnErrorListener { _, what, extra ->
+            Log.w("S3Preview", "video playback failed: $what/$extra")
+            playbackError = "无法播放这个视频，可能是编码格式不受支持。"
+            true
+        }
+        video.setVideoURI(Uri.parse(url))
+        video.requestFocus()
+        onDispose {
+            controller.hide()
+            video.stopPlayback()
+            host.keepScreenOn = false
+        }
+    }
+
+    Box(Modifier.fillMaxSize().background(Color.Black)) {
+        AndroidView(factory = { video }, modifier = Modifier.fillMaxSize())
+        if (!ready && playbackError == null) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center), color = Color.White)
+        }
+        playbackError?.let { message ->
+            Column(
+                Modifier.align(Alignment.Center).padding(horizontal = 28.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(message, color = Color.White, fontSize = 14.sp, textAlign = TextAlign.Center)
+                Text("可以下载后用本机的视频播放器打开。", color = Color(0xFFB9BDB7), fontSize = 13.sp, textAlign = TextAlign.Center)
+            }
+        }
     }
 }
 

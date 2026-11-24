@@ -114,7 +114,7 @@ fun FilesScreen(
         PreviewKind.of(entry.name)?.let { kind ->
             vm.hideDetail()
             when (kind) {
-                PreviewKind.TEXT, PreviewKind.IMAGE -> onPreview(bucket, entry.key)
+                PreviewKind.TEXT, PreviewKind.IMAGE, PreviewKind.VIDEO -> onPreview(bucket, entry.key)
                 PreviewKind.MEDIA -> vm.openExternally(entry)
             }
         }

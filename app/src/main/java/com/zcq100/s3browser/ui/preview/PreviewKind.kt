@@ -1,19 +1,21 @@
 package com.zcq100.s3browser.ui.preview
 
 /**
- * 文件的操作方式：
- * - 文本、图片在应用内查看；
- * - 视频、音频、SVG 等交给系统里已安装的其他应用（播放器、浏览器）处理。
+ * 文件的查看方式：
+ * - 文本、图片、视频在应用内查看（视频用预签名链接直接流式播放）；
+ * - 音频、SVG 等交给系统里已安装的其他应用处理。
  */
 enum class PreviewKind(val label: String) {
     TEXT("查看文本"),
     IMAGE("查看图片"),
+    VIDEO("播放视频"),
     MEDIA("用其他应用打开");
 
     companion object {
         fun of(name: String): PreviewKind? = when (name.substringAfterLast('.', "").lowercase()) {
             in TEXT_EXTENSIONS -> TEXT
             in IMAGE_EXTENSIONS -> IMAGE
+            in VIDEO_EXTENSIONS -> VIDEO
             in MEDIA_EXTENSIONS -> MEDIA
             else -> null
         }
@@ -51,6 +53,7 @@ private val TEXT_EXTENSIONS = setOf(
 private val IMAGE_EXTENSIONS = setOf("jpg", "jpeg", "png", "gif", "webp", "bmp", "heic", "heif", "avif")
 
 private val MEDIA_EXTENSIONS = setOf(
-    "mp4", "m4v", "mov", "mkv", "avi", "webm", "3gp", "wmv", "flv",
     "mp3", "m4a", "flac", "wav", "aac", "ogg", "opus", "svg",
 )
+
+private val VIDEO_EXTENSIONS = setOf("mp4", "m4v", "mov", "mkv", "avi", "webm", "3gp", "wmv", "flv")

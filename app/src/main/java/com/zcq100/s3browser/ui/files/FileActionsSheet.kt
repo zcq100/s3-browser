@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -104,7 +105,8 @@ fun FileActionsSheet(
                     icon = when (kind) {
                         PreviewKind.TEXT -> Icons.Outlined.Description
                         PreviewKind.IMAGE -> Icons.Outlined.Photo
-                        PreviewKind.MEDIA -> Icons.Outlined.PlayCircle
+                        PreviewKind.VIDEO -> Icons.Outlined.PlayCircle
+                        PreviewKind.MEDIA -> Icons.Outlined.OpenInNew
                     },
                 )
             }
